@@ -53,37 +53,53 @@ module.exports = (robot) ->
       msg.send "#{fact.value}"
 
   robot.respond /learn (.{3,}) = ([^@].+)/i, (msg) =>
-    [key, value] = [msg.match[1], msg.match[2]]
-    factoid = @factoids.set key, value, msg.message.user.name
+    user = msg.envelope.user
+    isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
+    if isAdmin or not robot.auth?
+      [key, value] = [msg.match[1], msg.match[2]]
+      factoid = @factoids.set key, value, msg.message.user.name
 
-    if factoid.value?
-      msg.reply "OK, #{key} is now #{factoid.value}"
+      if factoid.value?
+        msg.reply "OK, #{key} is now #{factoid.value}"
+    else msg.reply "You don't have permission to do that."
 
   robot.respond /learn (.{3,}) =~ s\/(.+)\/(.+)\/(.*)/i, (msg) =>
-    key = msg.match[1]
-    re = new RegExp(msg.match[2], msg.match[4])
-    fact = @factoids.get key
-    value = fact?.value.replace re, msg.match[3]
+    user = msg.envelope.user
+    isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
+    if isAdmin or not robot.auth?
+      key = msg.match[1]
+      re = new RegExp(msg.match[2], msg.match[4])
+      fact = @factoids.get key
+      value = fact?.value.replace re, msg.match[3]
 
-    factoid = @factoids.set key, value, msg.message.user.name if value?
+      factoid = @factoids.set key, value, msg.message.user.name if value?
 
-    if factoid? and factoid.value?
-      msg.reply "OK, #{key} is now #{factoid.value}"
-    else
-      msg.reply 'Not a factoid'
+      if factoid? and factoid.value?
+        msg.reply "OK, #{key} is now #{factoid.value}"
+      else
+        msg.reply 'Not a factoid'
+    else msg.reply "You don't have permission to do that."
 
   robot.respond /forget (.{3,})/i, (msg) =>
-    if @factoids.forget msg.match[1]
-      msg.reply "OK, forgot #{msg.match[1]}"
-    else
-      msg.reply 'Not a factoid'
+    user = msg.envelope.user
+    isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
+    if isAdmin or not robot.auth?
+      if @factoids.forget msg.match[1]
+        msg.reply "OK, forgot #{msg.match[1]}"
+      else
+        msg.reply 'Not a factoid'
+    else msg.reply "You don't have permission to do that."
 
   robot.respond /remember (.{3,})/i, (msg) =>
-    factoid = @factoids.remember msg.match[1]
-    if factoid? and not factoid.forgotten
-      msg.reply "OK, #{msg.match[1]} is #{factoid.value}"
-    else
-      msg.reply 'Not a factoid'
+    user = msg.envelope.user
+    isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
+    if isAdmin or not robot.auth?
+      factoid = @factoids.remember msg.match[1]
+      if factoid? and not factoid.forgotten
+        msg.reply "OK, #{msg.match[1]} is #{factoid.value}"
+      else
+        msg.reply 'Not a factoid'
+    else msg.reply "You don't have permission to do that."
 
   robot.respond /list all factoids/i, (msg) =>
     all = @factoids.getAll()
@@ -110,10 +126,14 @@ module.exports = (robot) ->
       msg.reply 'No factoids matched'
 
   robot.respond /alias (.{3,}) = (.{3,})/i, (msg) =>
-    who = msg.message.user.name
-    alias = msg.match[1]
-    target = msg.match[2]
-    msg.reply "OK, aliased #{alias} to #{target}" if @factoids.set msg.match[1], "@#{msg.match[2]}", msg.message.user.name, false
+    user = msg.envelope.user
+    isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
+    if isAdmin or not robot.auth?
+      who = msg.message.user.name
+        alias = msg.match[1]
+        target = msg.match[2]
+        msg.reply "OK, aliased #{alias} to #{target}" if @factoids.set msg.match[1], "@#{msg.match[2]}", msg.message.user.name, false
+    else msg.reply "You don't have permission to do that."
 
   robot.respond /drop (.{3,})/i, (msg) =>
     user = msg.envelope.user
