@@ -130,9 +130,9 @@ module.exports = (robot) ->
     isAdmin = robot.auth?.hasRole(user, 'factoids-admin') or robot.auth?.hasRole(user, 'admin')
     if isAdmin or not robot.auth?
       who = msg.message.user.name
-        alias = msg.match[1]
-        target = msg.match[2]
-        msg.reply "OK, aliased #{alias} to #{target}" if @factoids.set msg.match[1], "@#{msg.match[2]}", msg.message.user.name, false
+      alias = msg.match[1]
+      target = msg.match[2]
+      msg.reply "OK, aliased #{alias} to #{target}" if @factoids.set msg.match[1], "@#{msg.match[2]}", msg.message.user.name, false
     else msg.reply "You don't have permission to do that."
 
   robot.respond /drop (.{3,})/i, (msg) =>
