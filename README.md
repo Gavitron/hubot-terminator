@@ -5,7 +5,6 @@ A glossary for Hubot, forked from a factoids implementation (therealklanni/hubot
 ## Features
 
 * @mention support: definition will be directed at mentioned user.
-* Customizable prefix
 * Aliases: point a definition at the value of another definition.
 * Substitutive editing using sed-like syntax.
 * Term history: any time a new value is set on a term, the name of the
