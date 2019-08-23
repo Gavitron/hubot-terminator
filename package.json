@@ -1,6 +1,6 @@
 {
   "name": "hubot-terminator",
-  "description": "Terms for Hubot",
+  "description": "Hubot script to add Glossary/Definition feature.",
   "version": "0.0.1",
   "author": {
     "name": "Gavin McDonald",
@@ -16,7 +16,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/gavitron/hubot-terminator.git"
+    "url": "git://github.com/gavitron/hubot-terminator.git",
+    "private": true
   },
   "bugs": {
     "url": "https://github.com/gavitron/hubot-terminator/issues"
