@@ -95,8 +95,6 @@ the term or definition.
 ### Drop a definition
 
 **Permanently removes a definition — this action cannot be undone.**
-If [hubot-auth](https://github.com/hubot-scripts/hubot-auth) script is loaded,
-"admin" or "terminator-admin" role is required to perform this action. It's
-recommended you use the `forget` command instead of `drop`.
+It's recommended you use the `forget` command instead of `drop`.
 
 `hubot: drop <term>`

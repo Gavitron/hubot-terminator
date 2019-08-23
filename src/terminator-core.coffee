@@ -29,9 +29,7 @@ module.exports = (robot) ->
   robot.router.get "/#{robot.name}/definitions", (req, res) =>
     res.end JSON.stringify @definitions.data, null, 2
 
-  prefix = 'wtf is '
-
-  robot.hear new RegExp("^#{prefix}([\\w\\s-]{2,}\\w)( @.+)?", 'i'), (msg) =>
+  robot.hear new RegExp("^wtf is ([\\w\\s-]{2,}\\w)( @.+)?", 'i'), (msg) =>
     definition = @definitions.get msg.match[1]
     to = msg.match[2]
     if not definition? or definition.forgotten
@@ -41,7 +39,7 @@ module.exports = (robot) ->
       to ?= msg.message.user.name
       msg.send "#{to.trim()}: *#{msg.match[1]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
 
-  robot.respond new RegExp("#{prefix}([\\w\\s-]{2,}\\w)", 'i'), (msg) =>
+  robot.respond new RegExp("wtf is ([\\w\\s-]{2,}\\w)", 'i'), (msg) =>
     definition = @definitions.get msg.match[1]
     if not definition? or definition.forgotten
       msg.reply "Term not defined"
