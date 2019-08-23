@@ -1,13 +1,13 @@
 # Description:
-#   Provides important functions used by the main Factoids code.
+#   Provides important functions used by the main Definitions code.
 
-class Factoids
+class Definitions
   constructor: (@robot) ->
     if @robot.brain?.data?
-      @data = @robot.brain.data.factoids ?= {}
+      @data = @robot.brain.data.definitions ?= {}
 
     @robot.brain.on 'loaded', =>
-      @data = @robot.brain.data.factoids ?= {}
+      @data = @robot.brain.data.definitions ?= {}
 
   set: (key, value, who, resolveAlias) ->
     key = key.trim()
@@ -74,4 +74,4 @@ class Factoids
       delete @data[key]
     else false
 
-module.exports = Factoids
+module.exports = Definitions

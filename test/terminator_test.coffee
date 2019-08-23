@@ -7,7 +7,7 @@ expect = chai.expect
 Robot       = require 'hubot/src/robot'
 TextMessage = require('hubot/src/message').TextMessage
 
-describe 'factoids', ->
+describe 'definitions', ->
   robot = {}
   user = {}
   adapter = {}
@@ -21,7 +21,7 @@ describe 'factoids', ->
       spies.hear = sinon.spy(robot, 'hear')
       spies.respond = sinon.spy(robot, 'respond')
 
-      require('../src/factoids')(robot)
+      require('../src/terminator-core')(robot)
 
       user = robot.brain.userForId '1', {
         name: 'user'
@@ -38,23 +38,17 @@ describe 'factoids', ->
     robot.shutdown()
 
   describe 'listeners', ->
-    it 'registered hear !factoid', ->
+    it 'registered hear wtf is term', ->
       expect(spies.hear).to.have.been.calledWith(/^[!]([\w\s-]{2,}\w)( @.+)?/i)
 
     it 'registered respond learn', ->
       expect(spies.respond).to.have.been.calledWith(/learn (.{3,}) = ([^@].+)/i)
-
-    it 'registered respond learn substitution', ->
-      expect(spies.respond).to.have.been.calledWith(/learn (.{3,}) =~ s\/(.+)\/(.+)\/(.*)/i)
 
     it 'registered respond forget', ->
       expect(spies.respond).to.have.been.calledWith(/forget (.{3,})/i)
 
     it 'registered respond remember', ->
       expect(spies.respond).to.have.been.calledWith(/remember (.{3,})/i)
-
-    it 'registered respond factoids', ->
-      expect(spies.respond).to.have.been.calledWith(/factoids?/i)
 
     it 'registered respond search', ->
       expect(spies.respond).to.have.been.calledWith(/search (.{3,})/i)
@@ -65,7 +59,7 @@ describe 'factoids', ->
     it 'registered respond drop', ->
       expect(spies.respond).to.have.been.calledWith(/drop (.{3,})/i)
 
-  describe 'new factoids', ->
+  describe 'new definitions', ->
     it 'responds to learn', (done) ->
       adapter.on 'reply', (envelope, strings) ->
         expect(strings[0]).to.match /OK, foo is now bar/
@@ -73,34 +67,27 @@ describe 'factoids', ->
 
       adapter.receive(new TextMessage user, 'hubot: learn foo = bar')
 
-  describe 'existing factoids', ->
+  describe 'existing definitions', ->
     beforeEach ->
-      robot.brain.data.factoids.foo = value: 'bar'
-      robot.brain.data.factoids.foobar = value: 'baz'
-      robot.brain.data.factoids.barbaz = value: 'foo'
-      robot.brain.data.factoids.qix = value: 'bar'
-      robot.brain.data.factoids.qux = value: 'baz'
+      robot.brain.data.definitions.foo = value: 'bar'
+      robot.brain.data.definitions.foobar = value: 'baz'
+      robot.brain.data.definitions.barbaz = value: 'foo'
+      robot.brain.data.definitions.qix = value: 'bar'
+      robot.brain.data.definitions.qux = value: 'baz'
 
-    it 'responds to !factoid', (done) ->
+    it 'responds to wtf is term', (done) ->
       adapter.on 'send', (envelope, strings) ->
         expect(strings[0]).to.match /user: bar/
         done()
 
       adapter.receive(new TextMessage user, '!foo')
 
-    it 'responds to !factoid @mention', (done) ->
+    it 'responds to wtf is term @mention', (done) ->
       adapter.on 'send', (envelope, strings) ->
         expect(strings[0]).to.match /@user2: bar/
         done()
 
       adapter.receive(new TextMessage user, '!foo @user2')
-
-    it 'responds to learn substitution', (done) ->
-      adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /OK, foo is now qux/
-        done()
-
-      adapter.receive(new TextMessage user, 'hubot: learn foo =~ s/bar/qux/i')
 
     it 'responds to forget', (done) ->
       adapter.on 'reply', (envelope, strings) ->
@@ -111,10 +98,10 @@ describe 'factoids', ->
 
     it 'responds to search', (done) ->
       adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /.* the following factoids: .*!foobar/
-        expect(strings[0]).to.match /.* the following factoids: .*!barbaz/
-        expect(strings[0]).to.match /.* the following factoids: .*!qix/
-        expect(strings[0]).not.to.match /.* the following factoids: .*!qux/
+        expect(strings[0]).to.match /.* the following definitions: .*!foobar/
+        expect(strings[0]).to.match /.* the following definitions: .*!barbaz/
+        expect(strings[0]).to.match /.* the following definitions: .*!qix/
+        expect(strings[0]).not.to.match /.* the following definitions: .*!qux/
         done()
 
       adapter.receive(new TextMessage user, 'hubot: search bar')
@@ -133,9 +120,9 @@ describe 'factoids', ->
 
       adapter.receive(new TextMessage user, 'hubot: drop foo')
 
-  describe 'forgotten factoids', ->
+  describe 'forgotten definitions', ->
     beforeEach ->
-      robot.brain.data.factoids.foo = value: 'bar', forgotten: true
+      robot.brain.data.definitions.foo = value: 'bar', forgotten: true
 
     it 'responds to remember', (done) ->
       adapter.on 'reply', (envelope, strings) ->
@@ -144,68 +131,53 @@ describe 'factoids', ->
 
       adapter.receive(new TextMessage user, 'hubot: remember foo')
 
-  it 'responds to factoids', (done) ->
-    adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /http:\/\/not-yet-set\/.*\/factoids/
-      done()
-
-    adapter.receive(new TextMessage user, 'hubot: factoids')
-
-  describe 'list all factoids', ->
+  describe 'list all definitions', ->
     beforeEach ->
-      robot.brain.data.factoids.foo = value: 'bar', forgotten: true
-      robot.brain.data.factoids.bas = value: 'baz', forgotten: false
+      robot.brain.data.definitions.foo = value: 'bar', forgotten: true
+      robot.brain.data.definitions.bas = value: 'baz', forgotten: false
 
-    it 'responds to list all factoids', (done) ->
+    it 'responds to list all definitions', (done) ->
       adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /All factoids: \n!bas: baz\n/
+        expect(strings[0]).to.match /All definitions: \nbas: baz\n/
         done()
 
-      adapter.receive(new TextMessage user, 'hubot: list all factoids')
+      adapter.receive(new TextMessage user, 'hubot: list all definitions')
 
-  it 'responds to list all factoids, empty list', (done) ->
+  it 'responds to list all definitions, empty list', (done) ->
     adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /No factoids defined/
+      expect(strings[0]).to.match /No definitions defined/
       done()
 
-    adapter.receive(new TextMessage user, 'hubot: list all factoids')
+    adapter.receive(new TextMessage user, 'hubot: list all definitions')
 
-  it 'responds to invalid !factoid', (done) ->
+  it 'responds to invalid definition', (done) ->
     adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /Not a factoid/
+      expect(strings[0]).to.match /Term not defined/
       done()
 
     adapter.receive(new TextMessage user, '!foo')
 
-  it 'responds to invalid learn substitution', (done) ->
-    adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /Not a factoid/
-      done()
-
-    adapter.receive(new TextMessage user, 'hubot: learn foo =~ s/bar/baz/gi')
-
   it 'responds to invalid forget', (done) ->
     adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /Not a factoid/
+      expect(strings[0]).to.match /Term not defined/
       done()
 
     adapter.receive(new TextMessage user, 'hubot: forget foo')
 
   it 'responds to invalid drop', (done) ->
     adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /Not a factoid/
+      expect(strings[0]).to.match /Term not defined/
       done()
 
     adapter.receive(new TextMessage user, 'hubot: drop foo')
 
-describe 'factoids customization', ->
+describe 'facts customization', ->
   robot = {}
   user = {}
   adapter = {}
   spies = {}
 
   beforeEach (done) ->
-    process.env.HUBOT_FACTOID_PREFIX = '?'
     # Create new robot, with http, using mock adapter
     robot = new Robot null, 'mock-adapter', false
 
@@ -213,7 +185,7 @@ describe 'factoids customization', ->
       spies.hear = sinon.spy(robot, 'hear')
       spies.respond = sinon.spy(robot, 'respond')
 
-      require('../src/factoids')(robot)
+      require('../src/definitions')(robot)
 
       user = robot.brain.userForId '1', {
         name: 'user'
@@ -228,6 +200,3 @@ describe 'factoids customization', ->
 
   afterEach ->
     robot.shutdown()
-
-  it 'can override prefix', ->
-    expect(spies.hear).to.have.been.calledWith(/^[?]([\w\s-]{2,}\w)( @.+)?/i)

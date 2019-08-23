@@ -1,24 +1,25 @@
 {
-  "name": "hubot-factoids",
-  "description": "Factoids for Hubot",
-  "version": "1.2.0",
+  "name": "hubot-terminator",
+  "description": "Terms for Hubot",
+  "version": "0.0.1",
   "author": {
-    "name": "Kevin Lanni",
-    "email": "therealklanni@gmail.com",
-    "url": "https://github.com/therealklanni"
+    "name": "Gavin McDonald",
+    "email": "me@gavitron.com.com",
+    "url": "https://github.com/gavitron"
   },
   "license": "MIT",
   "keywords": [
     "hubot",
     "hubot-scripts",
-    "factoids"
+    "terms",
+    "definitions"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/therealklanni/hubot-factoids.git"
+    "url": "git://github.com/gavitron/hubot-terminator.git"
   },
   "bugs": {
-    "url": "https://github.com/therealklanni/hubot-factoids/issues"
+    "url": "https://github.com/gavitron/hubot-terminator/issues"
   },
   "dependencies": {
     "coffee-script": "~1.6"

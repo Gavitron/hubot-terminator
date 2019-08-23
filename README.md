@@ -1,8 +1,6 @@
-# Hubot Factoids
+# Hubot Facts
 
-A factoids implementation for Hubot, inspired by [oftn-bot](https://github.com/oftn/oftn-bot).
-
-[![Build Status](https://travis-ci.org/hubot-scripts/hubot-factoids.svg)](https://travis-ci.org/hubot-scripts/hubot-factoids)
+A factoids implementation for Hubot, forked from (therealklanni/hubot-factoids)[https://github.com/therealklanni/hubot-factoids].
 
 ## Features
 
