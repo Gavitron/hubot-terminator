@@ -19,8 +19,9 @@
 #   hubot list all definitions - list all definitions
 #   hubot search <substring> - list any definitions which match (by key or result)
 #
-# Author:
-#   gavitron
+# Authors:
+#   gavitron (2019)
+#   therealklanni (2013-2017)
 
 Definitions = require './definitions'
 
