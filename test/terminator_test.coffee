@@ -15,7 +15,7 @@ describe 'definitions', ->
 
   beforeEach (done) ->
     # Create new robot, with http, using mock adapter
-    robot = new Robot null, 'mock-adapter', false
+    robot = new Robot null, 'mock-adapter', true
 
     robot.adapter.on 'connected', =>
       spies.hear = sinon.spy(robot, 'hear')
@@ -39,7 +39,7 @@ describe 'definitions', ->
 
   describe 'listeners', ->
     it 'registered hear wtf is term', ->
-      expect(spies.hear).to.have.been.calledWith(/^[!]([\w\s-]{2,}\w)( @.+)?/i)
+      expect(spies.hear).to.have.been.calledWith(/^wtf is ([\w\s-]{2,}\w)( @.+)?/i)
 
     it 'registered respond learn', ->
       expect(spies.respond).to.have.been.calledWith(/learn (.{3,}) = ([^@].+)/i)
@@ -62,7 +62,7 @@ describe 'definitions', ->
   describe 'new definitions', ->
     it 'responds to learn', (done) ->
       adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /OK, foo is now bar/
+        expect(strings[0]).to.match /OK, I know what foo means/
         done()
 
       adapter.receive(new TextMessage user, 'hubot: learn foo = bar')
@@ -77,17 +77,17 @@ describe 'definitions', ->
 
     it 'responds to wtf is term', (done) ->
       adapter.on 'send', (envelope, strings) ->
-        expect(strings[0]).to.match /user: bar/
+        expect(strings[0]).to.match /\*foo\*\n> bar/
         done()
 
-      adapter.receive(new TextMessage user, '!foo')
+      adapter.receive(new TextMessage user, 'wtf is foo')
 
     it 'responds to wtf is term @mention', (done) ->
       adapter.on 'send', (envelope, strings) ->
-        expect(strings[0]).to.match /@user2: bar/
+        expect(strings[0]).to.match /@user2: \*foo\*\n> bar/
         done()
 
-      adapter.receive(new TextMessage user, '!foo @user2')
+      adapter.receive(new TextMessage user, 'wtf is foo @user2')
 
     it 'responds to forget', (done) ->
       adapter.on 'reply', (envelope, strings) ->
@@ -98,10 +98,11 @@ describe 'definitions', ->
 
     it 'responds to search', (done) ->
       adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /.* the following definitions: .*!foobar/
-        expect(strings[0]).to.match /.* the following definitions: .*!barbaz/
-        expect(strings[0]).to.match /.* the following definitions: .*!qix/
-        expect(strings[0]).not.to.match /.* the following definitions: .*!qux/
+        expect(strings[0]).to.match /.* the following definitions: .*foo/
+        expect(strings[0]).to.match /.* the following definitions: .*foobar/
+        expect(strings[0]).to.match /.* the following definitions: .*barbaz/
+        expect(strings[0]).to.match /.* the following definitions: .*qix/
+        expect(strings[0]).not.to.match /.* the following definitions: .*qux/
         done()
 
       adapter.receive(new TextMessage user, 'hubot: search bar')
@@ -145,7 +146,7 @@ describe 'definitions', ->
 
   it 'responds to list all definitions, empty list', (done) ->
     adapter.on 'reply', (envelope, strings) ->
-      expect(strings[0]).to.match /No definitions defined/
+      expect(strings[0]).to.match /Nothing defined/
       done()
 
     adapter.receive(new TextMessage user, 'hubot: list all definitions')
@@ -155,7 +156,7 @@ describe 'definitions', ->
       expect(strings[0]).to.match /Term not defined/
       done()
 
-    adapter.receive(new TextMessage user, '!foo')
+    adapter.receive(new TextMessage user, 'wtf is foo')
 
   it 'responds to invalid forget', (done) ->
     adapter.on 'reply', (envelope, strings) ->
