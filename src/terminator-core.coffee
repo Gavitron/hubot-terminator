@@ -48,7 +48,7 @@ module.exports = (robot) ->
       definition.popularity++
       msg.send "*#{msg.match[1]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
 
-  robot.respond /learn (.{3,}) = ([\s\S]+)/i, (msg) =>
+  robot.respond /learn (.{3,}) = ([^@].+)/i, (msg) =>
     user = msg.envelope.user
     [key, value] = [msg.match[1], msg.match[2]]
     definition = @definitions.set key, value, msg.message.user.name
