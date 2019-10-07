@@ -2,6 +2,9 @@
 
 A glossary for Hubot, forked from a factoids implementation (therealklanni/hubot-factoids)[https://github.com/therealklanni/hubot-factoids].
 
+
+![GitHub Actions status | Gavitron/hubot-terminator](https://github.com/Gavitron/hubot-terminator/workflows/Node%20CI/badge.svg)
+
 ## Features
 
 * @mention support: definition will be directed at mentioned user.
