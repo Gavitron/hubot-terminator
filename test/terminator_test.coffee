@@ -172,7 +172,6 @@ describe 'definitions', ->
 
     adapter.receive(new TextMessage user, 'hubot: drop foo')
 
-
 describe 'definition persistence', ->
   robot = {}
   user = {}
@@ -212,19 +211,19 @@ describe 'definition persistence', ->
 
   describe 'serializers', ->
 
-    it 'saves definitions to file', (done) ->
-
-      adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /OK, definitions are ```{"gavitron":{"value":"theoneandonly","popularity":42}}```/
-        done()
-
-      robot.brain.data.definitions.gavitron = value: "theoneandonly", popularity: 42
-      adapter.receive(new TextMessage user, 'hubot: save terms')
-
     it 'loads definitions from file', (done) ->
       adapter.on 'reply', (envelope, strings) ->
         expect(strings[0]).to.match /OK, definitions have been loaded/
-        expect(robot.brain.data.definitions).to.include.keys('andrew');
+        expect(robot.brain.data.definitions).to.include.keys('sampledata');
         done()
 
       adapter.receive(new TextMessage user, 'hubot: load terms')
+
+    it 'saves definitions to file', (done) ->
+
+      adapter.on 'reply', (envelope, strings) ->
+        expect(strings[0]).to.match /OK, definitions are saved/
+        done()
+
+      robot.brain.data.definitions.sampledata = value: "sample values", popularity: 42, forgotten: false
+      adapter.receive(new TextMessage user, 'hubot: save terms')

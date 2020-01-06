@@ -105,14 +105,30 @@ module.exports = (robot) ->
     else msg.reply "Term not defined"
 
   robot.respond /save terms/i, (msg) =>
-    user = msg.envelope.user
-    defs = @definitions.save()
-    if defs
-      msg.reply "OK, definitions are ```#{defs}```"
-    else msg.reply "ERROR: Save failed #{defs}"
+    Path = require 'path'
+    fs = require('fs');
+    path = Path.resolve('data')
+    filename = Path.join path, 'terminator_gestalt.json'
+    robot.logger.info("saving to file #{filename}")
+
+    def_json = @definitions.save()
+    fs.writeFile filename, def_json, (error) ->
+      robot.logging.error("Error writing file", error) if error
+
+    if def_json
+      msg.reply "OK, definitions are saved"
+    else msg.reply "ERROR: Save failed"
 
   robot.respond /load terms/i, (msg) =>
-    user = msg.envelope.user
-    if @definitions.load('{"andrew":{"value":"ponies","popularity":69}}')
+    Path = require 'path'
+    fs = require('fs');
+    path = Path.resolve('data')
+    filename = Path.join path, 'terminator_gestalt.json'
+    robot.logger.info("loading from file #{filename}")
+
+    def_json = fs.readFileSync filename, (error) ->
+      robot.logging.error("Error reading file", error) if error;
+
+    if @definitions.load(def_json)
       msg.reply "OK, definitions have been loaded"
     else msg.reply "ERROR: Load failed"
