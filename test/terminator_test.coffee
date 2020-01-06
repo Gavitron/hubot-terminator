@@ -172,7 +172,8 @@ describe 'definitions', ->
 
     adapter.receive(new TextMessage user, 'hubot: drop foo')
 
-describe 'facts customization', ->
+
+describe 'definition persistence', ->
   robot = {}
   user = {}
   adapter = {}
@@ -180,13 +181,13 @@ describe 'facts customization', ->
 
   beforeEach (done) ->
     # Create new robot, with http, using mock adapter
-    robot = new Robot null, 'mock-adapter', false
+    robot = new Robot null, 'mock-adapter', true
 
     robot.adapter.on 'connected', =>
       spies.hear = sinon.spy(robot, 'hear')
       spies.respond = sinon.spy(robot, 'respond')
 
-      require('../src/definitions')(robot)
+      require('../src/terminator-core')(robot)
 
       user = robot.brain.userForId '1', {
         name: 'user'
@@ -201,3 +202,29 @@ describe 'facts customization', ->
 
   afterEach ->
     robot.shutdown()
+
+  describe 'listeners', ->
+    it 'registered respond load', ->
+      expect(spies.respond).to.have.been.calledWith(/load terms/i)
+
+    it 'registered respond save', ->
+      expect(spies.respond).to.have.been.calledWith(/save terms/i)
+
+  describe 'serializers', ->
+
+    it 'saves definitions to file', (done) ->
+
+      adapter.on 'reply', (envelope, strings) ->
+        expect(strings[0]).to.match /OK, definitions are ```{"gavitron":{"value":"theoneandonly","popularity":42}}```/
+        done()
+
+      robot.brain.data.definitions.gavitron = value: "theoneandonly", popularity: 42
+      adapter.receive(new TextMessage user, 'hubot: save terms')
+
+    it 'loads definitions from file', (done) ->
+      adapter.on 'reply', (envelope, strings) ->
+        expect(strings[0]).to.match /OK, definitions have been loaded/
+        expect(robot.brain.data.definitions).to.include.keys('andrew');
+        done()
+
+      adapter.receive(new TextMessage user, 'hubot: load terms')

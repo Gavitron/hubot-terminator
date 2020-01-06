@@ -103,3 +103,16 @@ module.exports = (robot) ->
     if @definitions.drop definition
       msg.reply "OK, #{definition} has been dropped"
     else msg.reply "Term not defined"
+
+  robot.respond /save terms/i, (msg) =>
+    user = msg.envelope.user
+    defs = @definitions.save()
+    if defs
+      msg.reply "OK, definitions are ```#{defs}```"
+    else msg.reply "ERROR: Save failed #{defs}"
+
+  robot.respond /load terms/i, (msg) =>
+    user = msg.envelope.user
+    if @definitions.load('{"andrew":{"value":"ponies","popularity":69}}')
+      msg.reply "OK, definitions have been loaded"
+    else msg.reply "ERROR: Load failed"

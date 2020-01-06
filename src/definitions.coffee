@@ -9,6 +9,14 @@ class Definitions
     @robot.brain.on 'loaded', =>
       @data = @robot.brain.data.definitions ?= {}
 
+  load: (jsonstr) ->
+    if @robot.brain?.data?
+      @data = @robot.brain.data.definitions = JSON.parse(jsonstr)
+
+  save: () ->
+#    JSON.stringify @robot.brain.data.definitions, null, 2
+    JSON.stringify @data
+
   set: (key, value, who, resolveAlias) ->
     key = key.trim()
     value = value.trim()
