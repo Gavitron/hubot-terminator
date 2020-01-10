@@ -1,8 +1,11 @@
 chai = require 'chai'
 sinon = require 'sinon'
 chai.use require 'sinon-chai'
+chaiFiles = require 'chai-files'
+chai.use chaiFiles
 
 expect = chai.expect
+file = chaiFiles.file
 
 Robot       = require 'hubot/src/robot'
 TextMessage = require('hubot/src/message').TextMessage
@@ -211,19 +214,25 @@ describe 'definition persistence', ->
 
   describe 'serializers', ->
 
+#    it 'saves definitions to file', (done) ->
+#
+#      adapter.on 'reply', (envelope, strings) ->
+#        expect(strings[0]).to.match /OK, definitions are saved/
+#        expect(file('data/terminator_gestalt.json')).to.exist
+#        expect(file('data/terminator_gestalt.json')).to.contain('sampledata');
+#        #expect(file('data/terminator_gestalt.json')).to.equal(file('data/terminator_gestalt_test.json'));
+#        done()
+#
+#      robot.brain.data.definitions.sampledata = value: "sample values", popularity: 42, forgotten: false
+#      adapter.receive(new TextMessage user, 'hubot: save terms')
+
     it 'loads definitions from file', (done) ->
       adapter.on 'reply', (envelope, strings) ->
         expect(strings[0]).to.match /OK, definitions have been loaded/
         expect(robot.brain.data.definitions).to.include.keys('sampledata');
+        expect(file('data/terminator_gestalt.json')).to.exist
+        expect(file('data/terminator_gestalt.json')).to.contain('sampledata');
         done()
 
       adapter.receive(new TextMessage user, 'hubot: load terms')
 
-    it 'saves definitions to file', (done) ->
-
-      adapter.on 'reply', (envelope, strings) ->
-        expect(strings[0]).to.match /OK, definitions are saved/
-        done()
-
-      robot.brain.data.definitions.sampledata = value: "sample values", popularity: 42, forgotten: false
-      adapter.receive(new TextMessage user, 'hubot: save terms')

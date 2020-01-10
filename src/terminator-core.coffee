@@ -113,8 +113,8 @@ module.exports = (robot) ->
 
     def_json = @definitions.save()
     fs.writeFile filename, def_json, (error) ->
-      robot.logging.error("Error writing file", error) if error
-
+      console.log("Error writing file", error) if error
+    console.log def_json  
     if def_json
       msg.reply "OK, definitions are saved"
     else msg.reply "ERROR: Save failed"
