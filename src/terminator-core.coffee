@@ -10,7 +10,7 @@
 # Commands:
 #   hubot learn <term> = <definition> - learn a new term
 #   hubot alias <term> = <term>
-#   hubot wtf is <term> - lookup the definition of <term>
+#   hubot explain <term> - lookup the definition of <term>
 
 #   hubot forget <term> - forget a definition
 #   hubot remember <term> - remember a definition that was forgotten previously
@@ -30,23 +30,23 @@ module.exports = (robot) ->
   robot.router.get "/#{robot.name}/definitions", (req, res) =>
     res.end JSON.stringify @definitions.data, null, 2
 
-  robot.hear new RegExp("^wtf is ([\\w\\s-]{2,}\\w)( @.+)?", 'i'), (msg) =>
-    definition = @definitions.get msg.match[1]
-    to = msg.match[2]
+  robot.hear new RegExp("^explain (pls )?([\\w\\s-]{2,}\\w)( @.+)?", 'i'), (msg) =>
+    definition = @definitions.get msg.match[2]
+    to = msg.match[3]
     if not definition? or definition.forgotten
       msg.reply "Term not defined"
     else
       definition.popularity++
       to ?= msg.message.user.name
-      msg.send "#{to.trim()}: *#{msg.match[1]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
+      msg.send "#{to.trim()}: *#{msg.match[2]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
 
-  robot.respond new RegExp("wtf is ([\\w\\s-]{2,}\\w)", 'i'), (msg) =>
-    definition = @definitions.get msg.match[1]
+  robot.respond new RegExp("explain (pls )?([\\w\\s-]{2,}\\w)", 'i'), (msg) =>
+    definition = @definitions.get msg.match[2]
     if not definition? or definition.forgotten
       msg.reply "Term not defined"
     else
       definition.popularity++
-      msg.send "*#{msg.match[1]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
+      msg.send "*#{msg.match[2]}*\n> #{definition.value.replace(/\n/g,"\n> ")}"
 
   robot.respond /learn (.{3,}) = ([^@].+)/i, (msg) =>
     user = msg.envelope.user

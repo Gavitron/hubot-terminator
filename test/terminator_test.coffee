@@ -41,8 +41,8 @@ describe 'definitions', ->
     robot.shutdown()
 
   describe 'listeners', ->
-    it 'registered hear wtf is term', ->
-      expect(spies.hear).to.have.been.calledWith(/^wtf is ([\w\s-]{2,}\w)( @.+)?/i)
+    it 'registered hear explain term', ->
+      expect(spies.hear).to.have.been.calledWith(/^explain (pls )?([\w\s-]{2,}\w)( @.+)?/i)
 
     it 'registered respond learn', ->
       expect(spies.respond).to.have.been.calledWith(/learn (.{3,}) = ([^@].+)/i)
@@ -78,19 +78,33 @@ describe 'definitions', ->
       robot.brain.data.definitions.qix = value: 'bar'
       robot.brain.data.definitions.qux = value: 'baz'
 
-    it 'responds to wtf is term', (done) ->
+    it 'responds to explain term', (done) ->
       adapter.on 'send', (envelope, strings) ->
         expect(strings[0]).to.match /\*foo\*\n> bar/
         done()
 
-      adapter.receive(new TextMessage user, 'wtf is foo')
+      adapter.receive(new TextMessage user, 'explain foo')
 
-    it 'responds to wtf is term @mention', (done) ->
+    it 'responds to explain pls term', (done) ->
+      adapter.on 'send', (envelope, strings) ->
+        expect(strings[0]).to.match /\*foo\*\n> bar/
+        done()
+
+      adapter.receive(new TextMessage user, 'explain pls foo')
+
+    it 'responds to explain term @mention', (done) ->
       adapter.on 'send', (envelope, strings) ->
         expect(strings[0]).to.match /@user2: \*foo\*\n> bar/
         done()
 
-      adapter.receive(new TextMessage user, 'wtf is foo @user2')
+      adapter.receive(new TextMessage user, 'explain foo @user2')
+
+    it 'responds to explain pls term @mention', (done) ->
+      adapter.on 'send', (envelope, strings) ->
+        expect(strings[0]).to.match /@user2: \*foo\*\n> bar/
+        done()
+
+      adapter.receive(new TextMessage user, 'explain pls foo @user2')
 
     it 'responds to forget', (done) ->
       adapter.on 'reply', (envelope, strings) ->
@@ -159,7 +173,14 @@ describe 'definitions', ->
       expect(strings[0]).to.match /Term not defined/
       done()
 
-    adapter.receive(new TextMessage user, 'wtf is foo')
+    adapter.receive(new TextMessage user, 'explain foo')
+
+  it 'responds to invalid definition pls', (done) ->
+    adapter.on 'reply', (envelope, strings) ->
+      expect(strings[0]).to.match /Term not defined/
+      done()
+
+    adapter.receive(new TextMessage user, 'explain pls foo')
 
   it 'responds to invalid forget', (done) ->
     adapter.on 'reply', (envelope, strings) ->

@@ -76,11 +76,14 @@ Recall the value of the given definition.
 
 > **Note:** Hubot need not be directly addressed.
 
-`wtf is <term>`
+`explain <term>`
+`explain pls <term>`
+
 
 Can be combined with a @mention to direct the message at another user:
 
-`wtf is <term> @user`
+`explain <term> @user`
+`explain pls <term> @user`
 
 Hubot will respond accordingly:
 
